@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        #tampil {
+            text-align: center;
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 25px;
+        }
+        th {
+            color: aliceblue;
+            background-color: green;
+        }
+        td {
+            background-color: darkgray;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <h3>RS. Game Lab Indonesia</h3>
+        <label for="idpasien">ID Pasien</label><br><br>
+        <input type="text" id="idpasien"> <button onclick="cariPasien()">Search</button><br><br>
+        <label for="nama">Nama</label><br><br>
+        <input type="text" id="nama"><br><br>
+        <label for="alamat">Alamat</label><br><br>
+        <input type="text" id="alamat"><br><br>
+        <label for="penyakit">Penyakit</label><br><br>
+        <input type="text" id="penyakit"><br><br>
+        <label for="noruang">Nomor Ruang</label><br><br>
+        <input type="text" id="noruang"><br><br>
+        <label for="bpjs">BPJS</label><br><br>
+        <select name="bpjs" id="bpjs">
+            <option value="Tidak Menggunakan">Tidak Menggunaakn</option>
+            <option value="Kelas I">Kelas I</option>
+            <option value="Kelas II">Kelas II</option>
+            <option value="Kelas III">Kelas III</option>
+        </select><br><br>
+        <label for="tglmasuk">Tanggal Masuk</label><br><br>
+        <input type="date" id="tglmasuk"><br><br>
+        <label for="tglkeluar">Tanggal Keluar</label><br><br>
+        <input type="date" id="tglkeluar"><br><br>
+        <button id="save" type="submit">Save</button> <button onclick="tampilkanPasien()">Show</button> <button onclick="hapusPasien()">Delete</button> <br><br>
+        <table id="tampil">
+            <thead>
+                <tr>
+                    <th>ID Pasien</th>
+                    <th>Nama</th>
+                    <th>Alamat</th>
+                    <th>Penyakit</th>
+                    <th>Nomor Ruang</th>
+                    <th>BPJS</th>
+                    <th>Tanggal Masuk</th>
+                    <th>Tanggal Keluar</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Data Pasien akan ditampilkan di sini -->
+            </tbody>
+        </table>
+    </div>
+    
+    <script>
+        //save data
+        let storedData = JSON.parse(localStorage.getItem("dataPasien")) || [];
+        console.log(storedData);
+        document.querySelector("#save").addEventListener("click", function() {
+            const idpasien = document.querySelector("#idpasien").value;
+            const nama = document.querySelector("#nama").value;
+            const alamat = document.querySelector("#alamat").value;
+            const penyakit = document.querySelector("#penyakit").value;
+            const noruang = document.querySelector("#noruang").value;
+            const bpjs = document.querySelector("#bpjs").value;
+            const tglmasuk = document.querySelector("#tglmasuk").value;
+            const tglkeluar = document.querySelector("#tglkeluar").value;
+            const data = {idpasien, nama, alamat, penyakit, noruang, bpjs, tglmasuk, tglkeluar};
+            storedData.push(data);
+            localStorage.setItem("dataPasien", JSON.stringify(storedData));
+            console.log(storedData);
+        });
+
+        // menampilkan data (SHOW)
+        function tampilkanPasien() {
+            storedData = JSON.parse(localStorage.getItem("dataPasien")) || [];
+            let tampilTabel = document.getElementById('tampil');
+            let tbody = tampilTabel.getElementsByTagName('tbody')[0];
+            tbody.innerHTML = ''; 
+
+            for (const entry of storedData) {
+                let row = tbody.insertRow();
+                row.innerHTML = `<td>${entry.idpasien}</td><td>${entry.nama}</td><td>${entry.alamat}</td><td>${entry.penyakit}</td><td>${entry.noruang}</td><td>${entry.bpjs}</td><td>${entry.tglmasuk}</td><td>${entry.tglkeluar}</td>`;
+            }
+        }
+
+        //menghapus data pasien
+        function hapusPasien() {
+            const idpasien = document.querySelector("#idpasien").value;
+            if (idpasien === '') {
+                alert("Please enter the ID of the patient you want to delete.");
+                return;
+            }
+            storedData = storedData.filter(pasien => pasien.idpasien !== idpasien);
+            localStorage.setItem("dataPasien", JSON.stringify(storedData));
+            tampilkanPasien();
+            alert("Pasien dengan ID " + idpasien + " telah dihapus.");
+        }
+
+    //menampilkan data pasien dengan id tertentu
+    function cariPasien() {
+        const idpasien = document.querySelector("#idpasien").value;
+        const pasien = storedData.find(p => p.idpasien === idpasien);
+
+        if (pasien) {
+            // Jika pasien ditemukan, isi form dengan data pasien tersebut
+            document.querySelector("#nama").value = pasien.nama;
+            document.querySelector("#alamat").value = pasien.alamat;
+            document.querySelector("#penyakit").value = pasien.penyakit;
+            document.querySelector("#noruang").value = pasien.noruang;
+            document.querySelector("#bpjs").value = pasien.bpjs;
+            document.querySelector("#tglmasuk").value = pasien.tglmasuk;
+            document.querySelector("#tglkeluar").value = pasien.tglkeluar;
+        } else {
+            // Jika pasien tidak ditemukan, berikan alert
+            alert("Pasien dengan ID " + idpasien + " tidak ditemukan.");
+            document.querySelector("#nama").value = '';
+            document.querySelector("#alamat").value = '';
+            document.querySelector("#penyakit").value = '';
+            document.querySelector("#noruang").value = '';
+            document.querySelector("#bpjs").value = 'Tidak Menggunakan';
+            document.querySelector("#tglmasuk").value = '';
+            document.querySelector("#tglkeluar").value = '';
+        }
+    }
+
+
+            
+    </script>
+</body>
+</html>
